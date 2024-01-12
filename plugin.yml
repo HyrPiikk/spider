@@ -1,0 +1,10 @@
+name: Spider
+main: core\Main
+author: HyrPikk
+version: 1.0.0
+api: 5.8.2
+
+permissions:
+
+  spider.command:
+    default: op
