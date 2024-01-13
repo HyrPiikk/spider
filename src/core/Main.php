@@ -18,6 +18,7 @@ class Main extends PluginBase
         self::$instance = $this;
         $this->getLogger()->notice("Le plugin à bien démarrer !");
         $this->getLogger()->notice("By HyrPikk ");
+        $this->saveDefaultConfig();
 
         $this->getServer()->getCommandMap()->register("spider", $this->commands[] = new spider($this));
     }

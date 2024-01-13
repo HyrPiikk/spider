@@ -6,6 +6,7 @@ use core\Main;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
+use pocketmine\scheduler\ClosureTask;
 
 class spider extends Command
 {
@@ -19,43 +20,38 @@ class spider extends Command
 
     private $timer = [];
 
-    public function execute(CommandSender $sender, $commandLabel, array $args)
+    public function execute(CommandSender $sender, string $commandLabel, array $args)
     {
-        if(!$sender instanceof Player){
+        if (!$sender instanceof Player) {
             $sender->sendMessage("Please run the command in-game.");
             return true;
         }
 
-        if($sender->hasPermission("spider.command")){
+        $name = $sender->getName();
 
-            if(!isset($this->timer[$sender->getName()])) {
-                // the timer for this player is not set, so this is the first time the command is run
-                $this->timer[$sender->getName()]["end"] = time() + Main::getInstance()->getConfig()->get("time-utilisation");
-                $this->timer[$sender->getName()]["cooldown"] = time() + Main::getInstance()->getConfig()->get("time-sort") + Main::getInstance()->getConfig()->get("time-utilisation");
-
-                $sender->setCanClimbWalls(true);
-                $sender->sendMessage(Main::getInstance()->getConfig()->get("message-power"));
-                return true;
-            }
-
-            if(time() > $this->timer[$sender->getName()]["cooldown"]){
-                // the cooldown is over, so the player can run the command again
-                $this->timer[$sender->getName()]["end"] = time() + Main::getInstance()->getConfig()->get("time-utilisation");
-                $this->timer[$sender->getName()]["cooldown"] = time() + Main::getInstance()->getConfig()->get("time-sort") + Main::getInstance()->getConfig()->get("time-utilisation");
-
-                $sender->setCanClimbWalls(true);
-                $sender->sendMessage(Main::getInstance()->getConfig()->get("message-power"));
-            } else if(time() > $this->timer[$sender->getName()]["end"]){
-                // the utility time is over but the cooldown is not, so the player can not run the command
-                $sender->setCanClimbWalls(false);
-                $sender->sendMessage("§l§e»§r§f Time's up!");
-            } else {
-                // the utility time is not over and the cooldown is not either, so the player can not run the command
-                $time = $this->timer[$sender->getName()]["cooldown"] - time();
-                $sender->sendMessage("§l§e»§r§f Please wait §e{$time} seconds §fbefore using this command again!");
+        // Vérifier si le timer est activé pour le joueur
+        if(isset($this->timer[$name])) {
+            $expiry = $this->timer[$name];
+            if(time() < $expiry) {
+                $remaining = $expiry - time();
+                $sender->sendMessage("§7§l>> §r§7Veuillez attendre §c{$remaining} secondes §7avant d'utiliser à nouveau cette commande !");
+                return false;
             }
         }
+
+        // Activer l'effet
+        $this->timer[$name] = time() + Main::getInstance()->getConfig()->get("time-utilisation"); // 15 secondes d'attente avant de pouvoir réutiliser la commande
+        $sender->setCanClimbWalls(true);
+        $sender->sendMessage(Main::getInstance()->getConfig()->get("message-power"));
+
+        // Désactiver l'effet après 5 secondes
+        Main::getInstance()->getScheduler()->scheduleDelayedTask(new ClosureTask(function() use($sender): void {
+            if($sender->isOnline()) { // Check if the player is still online
+                $sender->setCanClimbWalls(false);
+                $sender->sendMessage(Main::getInstance()->getConfig()->get("message-nopower"));
+            }
+        }), 20 * 5); // 5 seconds
+
         return true;
     }
-
 }
