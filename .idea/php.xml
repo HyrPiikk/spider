@@ -12,6 +12,10 @@
   </component>
   <component name="PhpIncludePathManager">
     <include_path>
+      <path value="$PROJECT_DIR$" />
+      <path value="$PROJECT_DIR$/../../API_PHP/pm5/resources" />
+      <path value="$PROJECT_DIR$/../../API_PHP/pm5/src" />
+      <path value="$PROJECT_DIR$/../../API_PHP/pm5/vendor" />
       <path value="$PROJECT_DIR$/../API_PHP/pm5/resources" />
       <path value="$PROJECT_DIR$/../API_PHP/pm5/src" />
       <path value="$PROJECT_DIR$/../API_PHP/pm5/vendor" />
