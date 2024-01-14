@@ -8,6 +8,6 @@ Permet de grimper sur les murs
 
 # Commands
 
-| Commands | Description                    | Permission          |
-|----------|--------------------------------|---------------------|
-| /spider  | Permet de grimper sur les murs | spider.command           |
+| Commands | Description                    | Permission           |
+|----------|--------------------------------|----------------------|
+| /spider  | Permet de grimper sur les murs | spider.command       |
